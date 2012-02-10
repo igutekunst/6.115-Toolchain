@@ -61,7 +61,7 @@ def main():
       sys.stdout.write(s.read())
   if runProgram:
     print "Running user program"
-    time.sleep(.5)
+    time.sleep(1)
     for c in "G8000":
       if s.inWaiting() > 0:
         sys.stdout.write(s.read())
