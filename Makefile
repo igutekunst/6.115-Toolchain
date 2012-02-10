@@ -12,7 +12,7 @@ PROG := prog8051
 
 ${SRC}.obj: ${SRC}.asm
 	${AS} ${SRC}.asm
-all: test.obj
+all: ${SRC}.obj
 
 clean:
 	rm ${SRC}.lst
