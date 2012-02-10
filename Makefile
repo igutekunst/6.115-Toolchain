@@ -5,14 +5,14 @@ else
 USERPORT := `ls /dev/ttyUSB*`
 endif
 # modifty this to include the asm file you want to proram
-SRC := test
+SRC := lab1_0
 
 AS := rasm
 PROG := prog8051
 
 ${SRC}.obj: ${SRC}.asm
 	${AS} ${SRC}.asm
-all: test.obj
+all: ${SRC}.obj
 
 clean:
 	rm ${SRC}.lst
