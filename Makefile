@@ -15,7 +15,9 @@ ${SRC}.obj: ${SRC}.asm
 all: test.obj
 
 clean:
-	rm *.{lst,obj,err}
+	rm ${SRC}.lst
+	rm ${SRC}.err
+	rm ${SRC}.obj
 
 program: all
 	${PROG} -o ${SRC}.obj --serial-port ${USERPORT}

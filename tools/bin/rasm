@@ -7,7 +7,7 @@ set -e
 
 # If you have dosbox and wish to use this script on your own machine,
 # just copy the files from /mit/6.115/share/rasm and change this variable.
-RASMDIR=../tools/rasm
+RASMDIR=../rasm/
 
 # Figure out what they want to assemble
 if [ $# != 1 ] ; then
