@@ -12,6 +12,8 @@ git clone git://github.com/igutekunst/6.115-Toolchain.git 6.115
 
 
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
+
+source ~/.bashrc
 </pre>
 
 Test this by typing rasm test.asm
