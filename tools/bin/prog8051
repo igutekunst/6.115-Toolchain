@@ -1,0 +1,77 @@
+#!/usr/bin/python
+import sys,ConfigParser,argparse, time
+try:
+  import serial
+except Exception:
+  sys.stderr.write("Pyserial does not appear to be installed\n")
+  sys.exit(1)
+def usage():
+  print "Usage: %s filename.obj port" % sys.argv[0]
+  sys.exit(1)
+
+def main():
+  parser = argparse.ArgumentParser("%s" % sys.argv)
+  parser.add_argument("--serial-port",type=str,
+                      action="store",
+                      default="dev/ttyUSB0",
+                      dest="serialPort",help="Set programming serial port")
+  parser.add_argument("-o",type=str,
+                      action="store",
+                      required=True,
+                      help="Object file to write to the 8051",
+                     dest="objectFile")
+  parser.add_argument("--filename",type=str,
+                     action="store",
+                     default="prog8051_config.ini",
+                     help="User specified configuration file",
+                     dest="configFilename")
+  parser.add_argument("--run",
+                     action="store_true",
+                     default=False,
+                      help="Run user program after programming",
+                     dest="runProgram")
+  namespace = parser.parse_args()
+  configFilename = namespace.configFilename
+  serialPort = namespace.serialPort
+  objectFile = namespace.objectFile
+  runProgram = namespace.runProgram
+  config = ConfigParser.ConfigParser()
+  config.read(configFilename)
+  if namespace.configFilename:
+    serialPort = config.get("SerialPort","Port")
+  if namespace.serialPort:
+    serialPort = namespace.serialPort
+  s = serial.Serial(serialPort,baudrate=9600)
+  while s.inWaiting() > 0:
+    sys.stdout.write(s.read())
+  s.write("D")
+  time.sleep(.1)
+  if s.read() != 'D':
+    print "Please reset the RJ31P\n"
+    sys.exit(1)
+  f = open(objectFile,'rb')
+  if s.inWaiting() > 0:
+    sys.stdout.write(s.read())
+  program = f.read()
+  f.close()
+  for c in program:
+    s.write(c)
+    s.flush()
+    if s.inWaiting() > 0:
+      sys.stdout.write(s.read())
+  if runProgram:
+    print "Running user program"
+    time.sleep(.5)
+    for c in "G8000":
+      if s.inWaiting() > 0:
+        sys.stdout.write(s.read())
+      s.write(c)
+      s.flush()
+
+
+
+
+
+
+if __name__ == '__main__':
+  main()
