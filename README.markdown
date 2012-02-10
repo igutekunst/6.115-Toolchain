@@ -4,16 +4,20 @@ this is running the real 16bit DOS rasm executable inside of DOSBox. This means 
 These instructions have been tested on Mac and Ubuntu (donlanes). You will need some kind of a serial port to them to work. If you have questions, please ask me (isaac).
 
 I will likely continue to work on the toolchain, and will send out an email if I add something notable. prog8051 is a bit sketchy. I haven't tested it much. I will add version numbers to my toolchain if I release more than a few versions.
+
+A usb-serial dongle that works on Linux is: http://www.amazon.com/TRENDnet-Serial-Converter-TU-S9-White/dp/B0007T27H8/ref=sr_1_1?ie=UTF8&qid=1328853484&sr=8-1
 #Instructions
 <pre>
 sudo apt-get install dosbox python-serial 
 
+cd ~
 git clone git://github.com/igutekunst/6.115-Toolchain.git 6.115
 
 
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
 
 source ~/.bashrc
+
 </pre>
 
 Test this by typing rasm test.asm
@@ -86,3 +90,26 @@ ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/Dropbox/Classes/6.115/too
 <pre>
 sudo easy_install pyserial
 </pre>
+
+##Problems
+If you get something like
+<pre>
+isaac$:~/6.115$ rasm test.asm
+Executing DOSBox...
+Sorry, DOSBox failed.  Full output follows:
+DOSBox version 0.74
+Copyright 2002-2010 DOSBox Team, published under GNU GPL.
+---
+CONFIG: Generating default configuration.
+Writing it to /home/isaac/.dosbox/dosbox-0.74.conf
+CONFIG:Loading primary settings from config file
+/home/isaac/.dosbox/dosbox-0.74.conf
+MIXER:Got different values from SDL: freq 44100, blocksize 512
+ALSA:Can't subscribe to MIDI port (65:0) nor (17:0)
+MIDI:Opened device:none
+SHELL:Redirect output to t:LOG
+Illegal command: r:\rasm51e.exe.
+isaac$:~/6.115$
+</pre>
+
+You should modify tools/bin/rasm and adjust the indicated line to point at the rasm directory.
