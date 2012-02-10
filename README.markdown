@@ -8,7 +8,7 @@ I will likely continue to work on the toolchain, and will send out an email if I
 A usb-serial dongle that works on Linux is: http://www.amazon.com/TRENDnet-Serial-Converter-TU-S9-White/dp/B0007T27H8/ref=sr_1_1?ie=UTF8&qid=1328853484&sr=8-1
 #Instructions
 <pre>
-sudo apt-get install dosbox python-serial 
+sudo apt-get install dosbox python-serial python-argparse
 cd ~
 git clone git://github.com/igutekunst/6.115-Toolchain.git 6.115
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
