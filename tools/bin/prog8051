@@ -1,77 +1,43 @@
 #!/usr/bin/python
-import sys,ConfigParser,argparse, time
-try:
-  import serial
-except Exception:
-  sys.stderr.write("Pyserial does not appear to be installed\n")
-  sys.exit(1)
-def usage():
-  print "Usage: %s filename.obj port" % sys.argv[0]
-  sys.exit(1)
+import sys, ConfigParser, argparse, time, serial, threading
 
-def main():
-  parser = argparse.ArgumentParser("%s" % sys.argv)
-  parser.add_argument("--serial-port",type=str,
-                      action="store",
-                      default="dev/ttyUSB0",
-                      dest="serialPort",help="Set programming serial port")
-  parser.add_argument("-o",type=str,
-                      action="store",
-                      required=True,
-                      help="Object file to write to the 8051",
-                     dest="objectFile")
-  parser.add_argument("--filename",type=str,
-                     action="store",
-                     default="prog8051_config.ini",
-                     help="User specified configuration file",
-                     dest="configFilename")
-  parser.add_argument("--run",
-                     action="store_true",
-                     default=False,
-                      help="Run user program after programming",
-                     dest="runProgram")
-  namespace = parser.parse_args()
-  configFilename = namespace.configFilename
-  serialPort = namespace.serialPort
-  objectFile = namespace.objectFile
-  runProgram = namespace.runProgram
-  config = ConfigParser.ConfigParser()
-  config.read(configFilename)
-  if namespace.configFilename:
-    serialPort = config.get("SerialPort","Port")
-  if namespace.serialPort:
-    serialPort = namespace.serialPort
-  s = serial.Serial(serialPort,baudrate=9600)
-  while s.inWaiting() > 0:
-    sys.stdout.write(s.read())
-  s.write("D")
-  time.sleep(.1)
-  if s.read() != 'D':
-    print "Please reset the RJ31P\n"
-    sys.exit(1)
-  f = open(objectFile,'rb')
-  if s.inWaiting() > 0:
-    sys.stdout.write(s.read())
-  program = f.read()
-  f.close()
-  for c in program:
-    s.write(c)
-    s.flush()
-    if s.inWaiting() > 0:
-      sys.stdout.write(s.read())
-  if runProgram:
-    print "Running user program"
-    time.sleep(1)
-    for c in "G8000":
-      if s.inWaiting() > 0:
-        sys.stdout.write(s.read())
-      s.write(c)
-      s.flush()
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--serial-port", type=str,
+                    default="/dev/tty.usbserial",
+                    help="Set programming serial port")
+parser.add_argument("name", type=str,
+                    help="Object file to write to the 8051")
 
+args = parser.parse_args()
+port = serial.Serial(args.serial_port, baudrate=9600)
 
+time.sleep(1)
 
+def read():
+    try:
+        while True:
+            sys.stdout.write(port.read())
+    except:
+        pass
 
+read_thread = threading.Thread(target=read)
+read_thread.daemon = True
+read_thread.start()
 
+def write(data):
+    for char in data:
+        port.write(char)
+        port.flush()
 
-if __name__ == '__main__':
-  main()
+program = open(args.name, 'r').read()
+program = program.replace('\n', '')
+program = program.replace('\r', '')
+
+print "Sending code..."
+
+write("D")
+time.sleep(.5)
+write(program)
+time.sleep(.5)
+
+port.close()
