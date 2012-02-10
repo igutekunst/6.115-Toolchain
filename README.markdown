@@ -9,15 +9,10 @@ A usb-serial dongle that works on Linux is: http://www.amazon.com/TRENDnet-Seria
 #Instructions
 <pre>
 sudo apt-get install dosbox python-serial 
-
 cd ~
 git clone git://github.com/igutekunst/6.115-Toolchain.git 6.115
-
-
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
-
 source ~/.bashrc
-
 </pre>
 
 Test this by typing rasm test.asm
