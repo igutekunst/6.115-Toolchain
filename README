@@ -1,15 +1,14 @@
-=A few notes=
-this is running the real 16bit DOS rasm executable inside of DOSBox. This means DOS limitations apply. Make your filenames really short (8 characters or less). To read more about the restrictions, visit http://en.wikipedia.org/wiki/8.3_filename
+#A few notes
+this is running the real 16bit DOS rasm executable inside of DOSBox. This means DOS limitations apply. Make your filenames really short (8 characters or less). To read more about the restrictions, visit [http://en.wikipedia.org/wiki/8.3_filename]
 
 These instructions have been tested on Mac and Ubuntu (donlanes). You will need some kind of a serial port to them to work. If you have questions, please ask me (isaac).
 
 I will likely continue to work on the toolchain, and will send out an email if I add something notable. prog8051 is a bit sketchy. I haven't tested it much. I will add version numbers to my toolchain if I release more than a few versions.
- 
-=Instructions=
+#Instructions
 <pre>
-sudo apt-get install dosbox python-serial
+sudo apt-get install dosbox python-serial 
 
-mkdir ~/6.115
+mkdir ~/6.115 
 
 cd ~/6.115
 
@@ -18,7 +17,6 @@ wget http://mit.edu/~igutek/Public/6.115_toolchain.zip
 unzip 6.115_toolchain.zip
 
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
-
 </pre>
 
 Test this by typing rasm test.asm
@@ -52,21 +50,21 @@ Additionally, you can type
 make program
 </pre>
 To upload the program on the RJ31P (is that what it's called). 
-==Serial Port Settings==
+##Serial Port Settings
 For this to work, edit the Makefile and change the serial port to be the correct one for you machine. To find out, first type
 <pre>
 ls /dev/tty*
 </pre>
 Now plug in your serial port, and repeat the command. The item that shows up is the serial port.
-==Modifying the Makefile for your own code ==
+##Modifying the Makefile for your own code
 You can modify the Makefile to change which asm file it assembles by changing the SRC variable.
 
 Just open the file and replace SRC := test with SRC := myfile  (without the asm). Your file must be named myfile.asm
-==Plain Old rasm==
+##Plain Old rasm
 If you want, you can also just use rasm as documented in the lab
 
 
-==prog8051==
+##prog8051
 If have also included a program I wrote, prog8051 which will upload an .obj file the the board if it is in monitor mode.
 To use it, type prog8051 -o myfile.obj --serial-port /dev/thecorrectserialport
 
@@ -81,7 +79,7 @@ You can edit prog8051_config.ini and change the default serial port that prog805
 prog8051 -o myfile.obj
 </pre>
 
-=Mac Instructions=
+#Mac Instructions
 * Copy DOSBox.app into /Applications
 * Make a symlink  to /Applications/DOSBox.app/Contents/MacOS/DOSBox from ~/6.115/tools/bin/dosbox
 <pre>
@@ -91,4 +89,3 @@ ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/Dropbox/Classes/6.115/too
 <pre>
 sudo easy_install pyserial
 </pre>
-
