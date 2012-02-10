@@ -8,13 +8,8 @@ I will likely continue to work on the toolchain, and will send out an email if I
 <pre>
 sudo apt-get install dosbox python-serial 
 
-mkdir ~/6.115 
+git clone git://github.com/igutekunst/6.115-Toolchain.git 6.115
 
-cd ~/6.115
-
-wget http://mit.edu/~igutek/Public/6.115_toolchain.zip
-
-unzip 6.115_toolchain.zip
 
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
 </pre>
