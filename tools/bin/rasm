@@ -7,7 +7,7 @@ set -e
 
 # If you have dosbox and wish to use this script on your own machine,
 # just copy the files from /mit/6.115/share/rasm and change this variable.
-RASMDIR=../rasm/
+RASMDIR=$(dirname $0)/support
 
 # Figure out what they want to assemble
 if [ $# != 1 ] ; then
@@ -17,10 +17,8 @@ if [ $# != 1 ] ; then
 fi
 
 source="$1"
-[ -e "$source" ] || source="$1".asm
-[ -e "$source" ] || source="$1".ASM
 if [ ! -e "$source" ] ; then
-    echo "Error: can't find $1, $1.asm, or $1.ASM"
+    echo "Error: can't find $1"
     exit 1
 fi
 base="`echo "$source" | sed s/.[aA][sS][mM]$//`"
