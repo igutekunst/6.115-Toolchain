@@ -20,7 +20,5 @@ clean:
 	rm ${SRC}.obj
 
 program: all
-	${PROG} -o ${SRC}.obj --serial-port ${USERPORT}
+	${PROG}  ${SRC}.obj --serial-port ${USERPORT}
 
-run: all
-	${PROG} -o ${SRC}.obj --serial-port ${USERPORT} --run
