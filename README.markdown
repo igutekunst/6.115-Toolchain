@@ -62,7 +62,7 @@ If you want, you can also just use rasm as documented in the lab
 
 ##prog8051
 If have also included a program I wrote, prog8051 which will upload an .obj file the the board if it is in monitor mode.
-To use it, type prog8051 -o myfile.obj --serial-port /dev/thecorrectserialport
+To use it, type prog8051myfile.obj --serial-port /dev/thecorrectserialport
 
 To see the prog8051 syntax, type
 <pre>
@@ -70,7 +70,6 @@ prog8051 --help
 </pre> 
 
 
-You can edit prog8051_config.ini and change the default serial port that prog8051 uses. This way you can program simply by typing
 <pre>
 prog8051 -o myfile.obj
 </pre>
