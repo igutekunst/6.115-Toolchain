@@ -7,9 +7,33 @@ parser.add_argument("-p", "--serial-port", type=str,
                     help="Set programming serial port")
 parser.add_argument("name", type=str,
                     help="Object file to write to the 8051")
-
+parser.add_argument("--config", "-c", type=str,
+                         action="store",
+                         default="prog8051_config.ini",
+                         help="User specified configuration file",
+                         dest="config_filename")
 args = parser.parse_args()
-port = serial.Serial(args.serial_port, baudrate=9600)
+config = ConfigParser.ConfigParser()
+serial_port = "/dev/tty.usbserial"
+print
+
+try:
+  config.read(args.config_filename)
+  serial_port = config.get("SerialPort", "Port")
+except ConfigParser.NoSectionError:
+  print "No config file, or config file error. Trying to read %s " % args.config_filename
+  if args.serial_port == "/dev/tty.usbserial":
+    print "Additionally, no custom port was specified with --serial-port"
+    print "Exiting"
+    sys.exit(1)
+if args.serial_port != "/dev/tty.usbserial":
+  serial_port = args.serial_port
+try:
+  port = serial.Serial(serial_port, baudrate=9600)
+except serial.SerialException:
+  print "Serial port %s not found" % serial_port
+  print "Please confirm you device is plugged in, and the correct port is specified"
+  sys.exit(1)
 
 time.sleep(1)
 
@@ -41,3 +65,8 @@ write(program)
 time.sleep(.5)
 
 port.close()
+<<<<<<< HEAD
+print 
+=======
+print
+>>>>>>> development

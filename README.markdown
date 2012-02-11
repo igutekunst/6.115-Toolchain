@@ -8,7 +8,7 @@ I will likely continue to work on the toolchain, and will send out an email if I
 A usb-serial dongle that works on Linux is: http://www.amazon.com/TRENDnet-Serial-Converter-TU-S9-White/dp/B0007T27H8/ref=sr_1_1?ie=UTF8&qid=1328853484&sr=8-1
 #Instructions
 <pre>
-sudo apt-get install dosbox python-serial 
+sudo apt-get install dosbox python-serial python-argparse
 cd ~
 git clone git://github.com/igutekunst/6.115-Toolchain.git 6.115
 echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
@@ -62,7 +62,13 @@ If you want, you can also just use rasm as documented in the lab
 
 ##prog8051
 If have also included a program I wrote, prog8051 which will upload an .obj file the the board if it is in monitor mode.
-To use it, type prog8051 -o myfile.obj --serial-port /dev/thecorrectserialport
+To use it, type prog8051myfile.obj --serial-port /dev/thecorrectserialport
+
+For example,
+
+<pre>
+prog8051  myfile.obj --serial-port /dev/ttyUSB0
+</pre>
 
 To see the prog8051 syntax, type
 <pre>
@@ -70,10 +76,8 @@ prog8051 --help
 </pre> 
 
 
-You can edit prog8051_config.ini and change the default serial port that prog8051 uses. This way you can program simply by typing
-<pre>
-prog8051 -o myfile.obj
-</pre>
+If you want to avoid typing the serial port each time, edit the file prog8051_config.ini in the 6.115 directory to reflect 
+the correct port.
 
 #Mac Instructions
 * Copy DOSBox.app into /Applications
@@ -108,3 +112,11 @@ isaac$:~/6.115$
 </pre>
 
 You should modify tools/bin/rasm and adjust the indicated line to point at the rasm directory.
+
+
+#Getting Involved / I fixed something
+
+If you find something broken, or want to improve the toolchain, go ahead and fork it on GitHub. If you don't want to learn git, just send me 
+a modified file, and I'll merge it if it looks ok. 
+
+I can also make you a collaborator on GitHub if you are intersted enough.
