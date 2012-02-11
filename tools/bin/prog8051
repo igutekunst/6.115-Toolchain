@@ -65,8 +65,5 @@ write(program)
 time.sleep(.5)
 
 port.close()
-<<<<<<< HEAD
-print 
-=======
 print
 >>>>>>> development
