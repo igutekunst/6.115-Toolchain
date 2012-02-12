@@ -1,0 +1,218 @@
+     1              org 00h               ; Reset vector
+     2  0000 020100   ljmp main          ; Jump to user entry point
+     3                  
+     4              org 10h
+     5                  
+     6                  
+     7              org 100h
+     8              main:       
+     9  0100 1201E5   lcall init          ; initialize the serial port
+    10                loop:               ; infiinte loop
+    11  0103 7C06       mov R4, #06h
+    12                  getNumbers:
+    13  0105 120181       lcall getNum    ; get a valid number
+    14  0108 C0E0         push acc        ; push it onto the stack
+    15  010A E504         mov A, 4
+    16  010C 750204       mov 2, #4
+    17  010F B50203       cjne, A, 2, noCRLF
+    18  0112 120229       lcall crlf
+    19                    noCRLF:
+    20  0115 D504ED       djnz 4, getNumbers
+    21                      ; this next part pops the numbers from the stack, and multiplies each digit by it's
+    22                      ; power to get two arguments for the addition and subtraction
+    23  0118 D001       pop 1           ; store ones place of arg 2 in R1
+    24  011A D0E0       pop acc         ; move tens place into acc
+    25  011C 75F00A     mov B, #0Ah     ; Move 10 in to B
+    26  011F A4         mul AB          ; Multiply tens place by 10
+    27  0120 2501       add A, 1        ; add to the ones places
+    28  0122 F501       mov 1, A        ; store the partial sum in R1
+    29  0124 D0E0       pop acc         ; Pop the hundreds place into acc
+    30  0126 75F064     mov B, #64h     ; Store 100 in B
+    31  0129 A4         mul AB          ; Multiply 100's place by 100
+    32  012A 2501       add A, 1        ; complete the sum for argument 2
+    33  012C F502       mov 2, A        ; store 2nd argument in R3
+    34                      
+    35  012E D001       pop 1           ; store ones place of arg 1 In R1
+    36  0130 D0E0       pop acc         ; pop the tens place into the accumulator
+    37  0132 75F00A     mov B, #0Ah     ; move 10 into B
+    38  0135 A4         mul AB          ; multiply ten's place by 10
+    39  0136 2501       add A, 1        ; add to ones place
+    40  0138 F501       mov 1, A        ; move partial sum into R1
+    41  013A D0E0       pop acc         ; pop the hundred's place into the acumulator
+    42  013C 75F064     mov B, #64h     ; move 100 into B
+    43  013F A4         mul AB          ; multiply hundred's place by 100
+    44  0140 2501       add A, 1        ; complete the sum for argument 1
+    45  0142 F9         mov R1, A       ; Move argument 1 in R1
+    46                      
+    47  0143 120166     lcall getOperand;Determine whether to add or subtract by calling getOperand  
+    48  0146 600F       jz subtract     ; if getOperand returns zero, we should subtract
+    49                                      ; It's addition..
+    50  0148 EA         mov A, R2       ; Move argument 2 into accumulator
+    51  0149 29         add A, R1       ; add with argument 1
+    52  014A 120229     lcall crlf      ; send crlf
+    53  014D F590       mov P1, A       ; display on led bar
+    54  014F 12019C     lcall printNum  ; print the number on the UART
+    55  0152 120229     lcall crlf      ; send crlf
+    56  0155 80AC       sjmp loop       ; jump to begninning again
+    57                  
+    58                  subtract:       ; we should enter this for to perform a subtraction
+    59  0157 E9         mov   A, R1     ; Mov R1 into accumulator (so this will return R1 -R2)
+    60  0158 9A         subb  A, R2     ; subtract R2 from R2 
+    61  0159 F590       mov P1, A       ; display result on led bar
+    62  015B 120229     lcall crlf      ; send CRLF
+    63  015E 12019C     lcall printNum  ; print the number of the UART
+    64  0161 120229     lcall crlf      ; send another CRLF 
+    65  0164 809D       sjmp loop       ; return to top    
+    66                  
+    67              getOperand:
+    68                  ; Return 0 if a '-' was received over the uart, and 1 if a '+'
+    69                  ; blocks and eats characters until a '+' or '-' is received
+    70                  ; result in accumulator
+    71  0166 C001     push 1              ;save R1
+    72                  
+    73  0168 1201F2   lcall getchr
+    74  016B 75012B   mov 1, #2Bh         ; move ascii '+' into R1
+    75  016E B50105   cjne A, 1, notPlus
+    76  0171 7401     mov A, #01h         ; It's a plus. Prepare to return 1
+    77  0173 D001     pop 1               ; restore R1
+    78  0175 22       ret
+    79                notPlus:
+    80  0176 75012D   mov 1, #2Dh         ; move ascii '-' into R1
+    81  0179 B501EA   cjne A, 1, getOperand  ; if neither + or -, try again
+    82  017C 7400     mov A, #0h          ; it's a minus. Prepare to return 0 
+    83  017E D001     pop 1               ; restore R1
+    84  0180 22       ret
+    85              getNum:
+    86  0181 C000     push 0                ;save R0
+    87                  getLoop:
+    88  0183 1201F2       lcall getchr      ; get a character fomr the serial port
+    89  0186 F590         mov P1, A
+    90  0188 F8           mov R0, A         ; save the accumulator
+    91  0189 1201CB       lcall isNum       ; see if received character is a number
+    92  018C 60F5         jz  getLoop       ; if it's not, try again
+    93  018E E8           mov A, R0         ; restore the accumulator
+    94  018F 540F         anl A, #0Fh       ; mask out higher bits to get numeric value
+    95  0191 C0E0         push acc          ; push the numeric value onto the stack
+    96  0193 E8           mov A, R0         
+    97  0194 1201FC       lcall putchr      ; echo that character right back
+    98  0197 D0E0         pop acc           ; pop the numeric value back into the acc for return
+    99  0199 D000         pop 0             ; restore R0
+   100  019B 22           ret
+   101                  ; Gets three numbers, and pushes them onto the stack
+   102                  ; in the order they were received
+   103                  
+   104              printNum:
+   105                  ; prints a number between 0 and 255 over the UART
+   106                  ; argument is accumulator
+   107  019C C000     push 0
+   108  019E C001     push 1
+   109  01A0 C002     push 2
+   110  01A2 F8       mov R0, A
+   111                hundreds:
+   112  01A3 75F064     mov B, #64H
+   113  01A6 84         div AB
+   114  01A7 F9         mov R1, A       ; R1 contains number of hundreds
+   115  01A8 A8F0       mov R0, B       ; R0 contains the remainder
+   116  01AA E9         mov A, R1
+   117  01AB 4430       orl A, #30h   ;converts to ascii
+   118  01AD 1201FC     lcall putchr
+   119                tens:
+   120  01B0 E8         mov A, R0        ; A contains remainder
+   121  01B1 75F00A     mov B, #0Ah
+   122  01B4 84         div AB          ; divide by ten
+   123  01B5 F9         mov R1, A       ; R1 contains number of tens
+   124  01B6 A8F0       mov R0, B
+   125  01B8 E9         mov A, R1       ; Move the # tens into the accumulator
+   126  01B9 4430       orl A, #30h   ;converts to ascii
+   127  01BB 1201FC     lcall putchr
+   128                ones:
+   129  01BE E8         mov A, R0
+   130  01BF 4430       orl A, #30h   ;converts to ascii
+   131  01C1 1201FC     lcall putchr
+   132                noOnes:
+   133  01C4 D002     pop 2
+   134  01C6 D001     pop 1
+   135  01C8 D000     pop 0
+   136  01CA 22       ret
+   137              isNum:    
+   138                  ; this subroutine will set the accumulator to nonzero
+   139                  ; (ascii 0-9)
+   140                  ; if the value in the accumulator is a valid ascii number
+   141                  ; it lets a few numbers through, so i'm not going to worry about it
+   142  01CB C000     push 0                ; save R0 for safe keeping
+   143  01CD C001     push 1                ; save R1
+   144  01CF F9       mov R1, A             ; move potential ascii number into R1
+   145  01D0 54F0     anl A, #0F0h          ; mask out lower nibble
+   146  01D2 7830     mov R0, #30h          ; ascii for '0'
+   147  01D4 B50007   cjne A, 0, notNumber  ; if it's not a match, it's not number 
+   148                  
+   149  01D7 7401     mov A, #01h           ; return 1 for a number
+   150  01D9 D001     pop 1
+   151  01DB D000     pop 0
+   152  01DD 22       ret
+   153                notNumber:
+   154  01DE 7400       mov A, #0h          ; return 0 for non number
+   155  01E0 D001       pop 1
+   156  01E2 D000       pop 0
+   157  01E4 22         ret
+   158                  
+   159                  
+   160              init:
+   161                  ; assume 11.0592 Mhz Clock
+   162                  ; user TIMER1 to create a 9600 baude connection
+   163  01E5 758920   mov tmod, #20h
+   164  01E8 758840   mov tcon, #40h
+   165  01EB 758DFD   mov th1,  #0FDh
+   166  01EE 759850   mov scon, #50h
+   167  01F1 22       ret
+   168                  
+   169              getchr:
+   170                  ; This routine receives characters from the UART
+   171                  ; jnb is bitwise jmp if bit not set
+   172  01F2 3098FD   jnb RI, getchr  ; wait until the rx interrupt flag is set
+   173  01F5 E599     mov A, sbuf     ; move the character into the accumulator
+   174  01F7 547F     anl A, #7fh      ; clear 8th bit (since this should be ASCII)
+   175  01F9 C298     clr RI          ; clear the intterupt flag
+   176  01FB 22       ret
+   177                  
+   178                  
+   179              putchr:
+   180  01FC C299     clr scon.1          ; Clear the transmit done flag
+   181  01FE F599     mov sbuf, a
+   182                txloop:
+   183  0200 3099FD     jnb TI, txloop    ; Wait until the character is actually sent
+   184  0203 22         ret
+   185                  
+   186              backspace:
+   187  0204 C0E0     push acc
+   188  0206 12021E   lcall escape
+   189  0209 7431     mov A, #31h ; '1'
+   190  020B 1201FC   lcall putchr
+   191  020E 7444     mov A, #44h ; 'D'
+   192  0210 1201FC   lcall putchr
+   193                  
+   194  0213 12021E   lcall escape
+   195  0216 744B     mov A, #4Bh
+   196  0218 1201FC   lcall putchr
+   197  021B D0E0     pop acc
+   198  021D 22       ret
+   199                    
+   200                  
+   201              escape:
+   202  021E 741B     mov A, #1bh
+   203  0220 1201FC   lcall putchr
+   204  0223 745B     mov A, #5Bh ; [
+   205  0225 1201FC   lcall putchr
+   206  0228 22       ret
+   207                  
+   208                  
+   209              crlf:
+   210  0229 C0E0     push acc
+   211  022B 740D     mov A, #0Dh
+   212  022D 1201FC   lcall putchr
+   213  0230 740A     mov A, #0Ah
+   214  0232 1201FC   lcall putchr
+   215  0235 D0E0     pop acc
+   216  0237 22       ret
+
+

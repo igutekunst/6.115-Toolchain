@@ -1,0 +1,115 @@
+     1  0000 7590FF mov P1, #0ffh ; Clear LED bank
+     2                  
+     3  0003 75100F   mov 10h, #0fh
+     4  0006 75110E   mov 11h, #0eh
+     5  0009 751207   mov 12h, #07h
+     6  000C 751301   mov 13h, #01h
+     7  000F 751407   mov 14h, #07h
+     8  0012 75150E   mov 15h, #0eh
+     9  0015 75160F   mov 16h, #0fh
+    10  0018 751700   mov 17h, #00h 
+    11                  
+    12  001B 7E10   mov R6, #010h
+    13              loop:
+    14                  
+    15  001D 750108   mov 1, #08h   ; Highest LED
+    16  0020 C3       clr c
+    17  0021 7401     mov A, #1h
+    18  0023 F502     mov 2, A
+    19                init:
+    20  0025 12008D     lcall loadLed ; load the led value into R0
+    21  0028 E8         mov A, R0
+    22                  
+    23  0029 6004       jz off
+    24  002B E502       mov A, 2
+    25  002D 4290       orl P1, A
+    26                  off:
+    27                      
+    28                      
+    29  002F EA         mov A, R2
+    30  0030 33         rlc A
+    31  0031 FA         mov R2, A
+    32  0032 D9F1       djnz R1, init
+    33                  
+    34                    ; 1: led #
+    35                    ; 2: led mask
+    36                    ; 3: brightness value
+    37  0034 7B0F     mov R3, #0fh
+    38                for_each_brightness:
+    39                      
+    40  0036 7F08       mov R7, #08h   ; Highest LED
+    41  0038 C3         clr c
+    42  0039 7401       mov A, #1h    ; Led Mask for led 0
+    43  003B FA         mov R2, A      ; store in R2 for safe keeping
+    44                  
+    45                  for_each_led:
+    46  003C 850701       mov 1, 7
+    47  003F 12008D       lcall loadLed   ; assumes LED# stored in R1
+    48                                        ; will learn about stacking later
+    49  0042 E8           mov A, R0       ; get return value
+    50  0043 B50306       cjne A, 3, led_still_on
+    51  0046 E502         mov A, 2        ;load the led mask
+    52  0048 64FF         xrl A, #0ffh    ; negate
+    53  004A 5290         anl P1, A
+    54                  
+    55                    led_still_on:
+    56                  
+    57                  
+    58                  
+    59  004C EA           mov A, R2  ; Load LED mask
+    60  004D C3           clr c
+    61  004E 33           rlc A      ; left shift
+    62  004F FA           mov R2, A  ; store in R2
+    63  0050 DFEA         djnz R7, for_each_led
+    64  0052 120082       lcall delay
+    65                  
+    66  0055 DBDF       djnz R3, for_each_brightness
+    67  0057 759000     mov P1, #00h
+    68  005A 7F10       mov R7, #010h
+    69  005C 120098     lcall long_delay
+    70                  
+    71  005F DEBC     djnz R6, loop
+    72  0061 120068   lcall next
+    73  0064 7E10     mov R6, #10h
+    74  0066 80B5     sjmp loop 
+    75                  
+    76                  
+    77                  
+    78                  
+    79              next:
+    80  0068 E510     mov A, 10h
+    81  006A 851110   mov 10h, 11h
+    82  006D 851211   mov 11h, 12h
+    83  0070 851312   mov 12h, 13h
+    84  0073 851413   mov 13h, 14h
+    85  0076 851514   mov 14h, 15h
+    86  0079 851615   mov 15h, 16h
+    87  007C 851716   mov 16h, 17h
+    88  007F F517     mov 17h, A
+    89  0081 22       ret
+    90              delay:
+    91  0082 C006     push 6
+    92  0084 750605   mov 6, #05h
+    93                dtop:
+    94  0087 00       nop
+    95  0088 DEFD       djnz R6,dtop
+    96                  
+    97  008A D006     pop 6
+    98  008C 22       ret
+    99                  ;Loads the value of the led into R0
+   100              loadLed:    ; loads the led brighness value from the table stored from 0x10 to 0x17 into R0
+   101  008D 7418       mov A, #18h
+   102  008F 99         subb A, R1
+   103                  
+   104  0090 C001       push 1
+   105  0092 F9         mov R1, A
+   106  0093 E7         mov A, @R1
+   107  0094 D001       pop 1
+   108  0096 F8         mov R0, A
+   109  0097 22         ret
+   110              long_delay:
+   111  0098 120082   lcall delay
+   112  009B D507FA   djnz 7, long_delay
+   113  009E 22       ret
+
+
