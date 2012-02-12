@@ -1,6 +1,0 @@
-     1  0000 759000 mov P1, #00h ; Clear led bank
-     2  0003 759080 mov P1, #80h ; Turn on Highest led
-     3              loop:
-     4  0006 80FE     sjmp loop ; loop forever
-
-
