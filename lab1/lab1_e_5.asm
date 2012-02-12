@@ -1,9 +1,6 @@
 org 00h               ; Reset vector
   ljmp main          ; Jump to user entry point
 
-org 10h
-
-
 org 100h
 main:       
   lcall init          ; initialize the serial port
@@ -83,6 +80,11 @@ getOperand:
   pop 1               ; restore R1
   ret
 getNum:
+; Returns a number from 0-9 in the accumulator
+; by sitting on the serial port until a valid character is returne
+; depends on isNum subroutine to determine what valid chracters are
+; modifes LED bank on P1
+; leaves registers alone (on return)
   push 0                ;save R0
     getLoop:
       lcall getchr      ; get a character fomr the serial port

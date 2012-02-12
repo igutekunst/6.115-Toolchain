@@ -3,6 +3,7 @@ org 00h               ; Reset vector
 
 
 org 100h              ; main entry point at 100h
+mov R3, #41h          ; loads the auto-wrap counter with 65
 main:       
   lcall init          ; initialize the serial port
   loop:               ; infiinte loop
@@ -11,21 +12,31 @@ main:
 
     mov R0, #7Fh
     cjne A, 0, nobs
+    push acc          ; save the accumulator for a second
+    mov A, R3
+    add A, #2h
+    mov R3, A
+    pop acc           ; restore the accumulator
     lcall backspace
     nobs:
 
     mov R0, #0Dh
     cjne, A, 0, nocrlf
     lcall crlf
+    mov R3, #41h      ; resets the auto-wrap
     nocrlf:
 
     lcall putchr      ; echo that character right back
-    sjmp loop           
+
+    djnz 3, loop
+    mov R3, #41h      ; loads the character counter to 65
+    lcall crlf
+    sjmp loop
 
 
 init:
 ; assume 11.0592 Mhz Clock
-; user TIMER1 to create a 9600 baude connection
+; user TIMER1 to create a 9600 baud connection
   mov tmod, #20h
   mov tcon, #40h
   mov th1,  #0FDh
