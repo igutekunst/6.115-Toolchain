@@ -1,4 +1,8 @@
 class Instruction():
+  pass
 
-	def __init__(self):
-		pass
+
+
+
+  
+

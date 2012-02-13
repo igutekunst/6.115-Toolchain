@@ -1,3 +1,21 @@
+def number_from_string(string):
+
+		if string.startswith("0x"):
+		    return int(string[2:],16)
+		elif string.startswith("0b"):
+		    return int(string[2:],2)
+		elif string.startswith("'"):
+		    return ord(string[1])
+		elif string[0] in "abcdefABCDEF0123456789":
+		    if string.endswith('h'):
+		        if len(string) < 4:
+		            return int(string[:-1],16)
+		    elif string.endswith('d'):
+		        return int(string[:-1],10)
+		    elif string.endswith('b'):
+		        return int(string[:-1],2)
+		    else:
+		        return int(string,10)
 class Operand():
     def __init__(self):
 		pass
@@ -18,23 +36,8 @@ class Literal(Operand):
 
 class NumberLiteral(Literal):
     def __init__(self, opstr):
-		self.opstr = opstr
-		if opstr.startswith("0x"):
-		    self.value = int(opstr[2:],16)
-		elif opstr.startswith("0b"):
-		    self.value = int(opstr[2:],2)
-		elif opstr.startswith("'"):
-		    self.value = ord(opstr[1])
-		elif opstr[0] in "abcdefABCDEF0123456789":
-		    if opstr.endswith('h'):
-		        if len(opstr) < 4:
-		            self.value = int(opstr[:-1],16)
-		    elif opstr.endswith('d'):
-		        self.value = int(opstr[:-1],10)
-		    elif opstr.endswith('b'):
-		        self.value = int(opstr[:-1],2)
-		    else:
-		        self.value = int(opstr[:-1],10)
+      self.opstr = opstr
+      self.value = number_from_string(opstr)
     def __str__(self):
 	    return "<NumberLiteral: %d ascii: '%c' >" % (self.value,chr(self.value))
 				    
@@ -45,7 +48,8 @@ class Address(Operand):
     		pass
 class DirectAddress(Address):
    def __init__(self, opstr):
-		pass
+     self.value = number_from_string(opstr)
+
 		
 class IndirectAddress(Address):
    def __init__(self, opstr):
@@ -70,5 +74,5 @@ def construct_operand(opstr):
     if opstr.startswith("#"):
         return NumberLiteral(opstr[1:])
     elif opstr.startswith("0x"):
-        return Address(opstr )
+        return DirectAddress(opstr )
     return Operand()
