@@ -5,7 +5,7 @@ else
 USERPORT := `ls /dev/ttyUSB*`
 endif
 # modifty this to include the asm file you want to proram
-SRC := test
+SRC := lab1/lab1_e_4.asm
 
 AS := rasm
 PROG := prog8051
