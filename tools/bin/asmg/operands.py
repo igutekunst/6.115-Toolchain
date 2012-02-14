@@ -28,8 +28,23 @@ class InvalidOperand(Operand):
     
 
 class Label(Operand):
-   def __init__(self, opstr):
-		pass
+  def __init__(self, name, address, filename, line_number):
+    self.name = name
+    self.filename = filename
+    self.line_number = line_number
+    self.address = address
+
+  def from_string(string, address, filename, line_number):
+    #TODO Validate input string here
+    return Label(string, address, filename, line_number)
+
+  def __hash__(self):
+    return hash(self.name)
+
+  def __str__(self):
+    return "<Label: %s>" % self.name
+  def __repr__(self):
+    return str(self)
 class Literal(Operand):
     def __init__(self, opstr):
     		pass

@@ -35,12 +35,15 @@ class MovDirectFromLiteral(Mov):
   def __init__(self, args):
     self.direct = args[0]
     self.literal = args[1]
+    self.bytes = self.getBytes()
     
-  def getHex(self):
+  def getBytes(self):
     return [self.opcode, self.direct.value, self.literal.value] 
 
   def __str__(self):
     return "<mov direct: 0x%x, literal: 0x%x>" % (self.direct.value,self.literal.value)
+  def __reptr__(self):
+    return str(self)
 
 by_signature = {}
 o = operands 
