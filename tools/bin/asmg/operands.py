@@ -42,7 +42,7 @@ class Label(Operand):
     return hash(self.name)
 
   def __str__(self):
-    return "<Label: %s>" % self.name
+    return "<Label: %s addr: 0x%X>" % (self.name, self.address)
   def __repr__(self):
     return str(self)
 class Literal(Operand):

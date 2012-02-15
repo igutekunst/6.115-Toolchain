@@ -22,7 +22,7 @@ class Program(object):
     if address in self.segments_by_start_address:
       raise Exception(" Attempt create a code segment when one already exists")
     else:
-      new_segment = Segment(addresss) 
+      new_segment = Segment(address) 
       self.segments_by_start_address[address] = new_segment
       self.current_segment = new_segment
       self.current_address = address
@@ -33,14 +33,16 @@ class Program(object):
     """
     Appends a new instruction to the current code segment
     """
-    addresses_affected = [l + self.current_address for l in xrange(len(instruction))]
-    for address in adresses_affected:
+    addresses_affected = [1+l + self.current_address for l in xrange(len(instruction))]
+    for address in addresses_affected:
       if address in self.segments_by_start_address:
         raise Exception("Segment is overflowing")
 
-    self.current_segement.add_instruction(instruction)
+    self.current_segment.add_instruction(instruction)
     self.instructions.append(instruction)
-    
+  def append(self, instruction):
+    return self.add_instruction(instruction)
+
 
   def __iter__(self):
     return iter(self.instructions)
