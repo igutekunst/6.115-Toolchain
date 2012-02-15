@@ -6,7 +6,7 @@ These instructions have been tested on Mac and Ubuntu (donlanes). You will need 
 I will likely continue to work on the toolchain, and will send out an email if I add something notable. prog8051 is a bit sketchy. I haven't tested it much. I will add version numbers to my toolchain if I release more than a few versions.
 
 A usb-serial dongle that works on Linux is: http://www.amazon.com/TRENDnet-Serial-Converter-TU-S9-White/dp/B0007T27H8/ref=sr_1_1?ie=UTF8&qid=1328853484&sr=8-1
-#Instructions
+#Ubuntu Instructions
 <pre>
 sudo apt-get install dosbox python-serial python-argparse
 cd ~
@@ -83,11 +83,12 @@ the correct port.
 * Copy DOSBox.app into /Applications
 * Make a symlink  to /Applications/DOSBox.app/Contents/MacOS/DOSBox from ~/6.115/tools/bin/dosbox
 <pre>
-ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/Dropbox/Classes/6.115/tools/bin/dosbox 
+ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/6.115/tools/bin/dosbox 
 </pre>
-* Follow the general instructions above, but Instead install pyserial with the following command
+* Follow the general instructions above, but Instead install pyserial, and argparse with the following command
 <pre>
 sudo easy_install pyserial
+sudo easy_install argparase
 </pre>
 
 ##Problems
