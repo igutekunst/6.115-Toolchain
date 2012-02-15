@@ -11,6 +11,7 @@ class Segment(object):
 
 class Program(object):
   segments_by_start_address = {}
+  instructions = []
   def __init__(self, memory_size = 4096):
     self.current_segment_start_address = 0
 
@@ -38,7 +39,11 @@ class Program(object):
         raise Exception("Segment is overflowing")
 
     self.current_segement.add_instruction(instruction)
+    self.instructions.append(instruction)
     
+
+  def __iter__(self):
+    return iter(self.instructions)
 
 
 

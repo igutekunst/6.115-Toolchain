@@ -34,9 +34,9 @@ class Label(Operand):
     self.line_number = line_number
     self.address = address
 
-  def from_string(string, address, filename, line_number):
+  def from_string(self,address, filename, line_number):
     #TODO Validate input string here
-    return Label(string, address, filename, line_number)
+    return Label(self, string, address, filename, line_number)
 
   def __hash__(self):
     return hash(self.name)

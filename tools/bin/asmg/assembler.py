@@ -1,27 +1,23 @@
+import sys
 import operands, instructions, pseudo_instructions
+from insert_once_dict import DuplicateKeyError, InsertOnceDict
 from program import Program
 from sets import Set
 
 class Assembler(object):
 
   segment_size = 0
-  program_instructions = []
   labels = Set()
-  address_by_label = []
   def __init__(self, input_filename, parent = None):
-    try:
-      self.f = open(input_filename,'r')
-      self.filename = input_file
-    except Exception as e:
-      print str()
-      sys.exit(1)
+    self.f = open(input_filename,'r')
+    self.filename = input_filename
     if parent is None:
-      self.current_address = 0
+      self.address = 0
+      self.program = Program()
       self.line_number = 1
     else:
-      self.program = Program()
-      self.current_address = parent.current_address
-      self.parent_include_line_number= parent.line_number
+      self.address = parent.current_address
+      self.parent_include_line_number = parent.line_number
       self.line_number = 1
       self.labels = parent.labels
 
@@ -29,16 +25,19 @@ class Assembler(object):
     for line in self.f:
       # Could be a normal op, a label, or a pseudo-op
       
-      if line.endswith(':'):
+      if line.endswith(':\n'):
+        print "label"
         label_name = tokens[0][:-1]
-        if label_name in self.address_by_label:
+        if label_name in self.labels:
           raise Exception("Duplicate label")
-        label = operands.Label.from_string(label_name, address, filename, line_number)
+        label = operands.Label(label_name, self.address, self.filename, self.line_number)
+        self.labels[label] = self.address
       else:
         tokens = line.replace(',', ' ').split()
         op_name = tokens[0].upper()
 
         if op_name in instructions.by_name:
+          print "Instruction: %s" % op_name
           pass
           #normal op
         elif op_name in pseudo_instructions.by_name:
@@ -47,14 +46,20 @@ class Assembler(object):
 
       pass
     for instruction in self.program:
-      pass
-      
+     print instruction 
     
-     
+
 
 target_segment_size = 10
 
 filename = "test.asm"
+
+assembler = Assembler(filename)
+
+assembler.assemble()
+
+
+sys.exit(0)
 f = open(filename,'r')
 line_number = 1
 address = 0
