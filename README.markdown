@@ -1,3 +1,19 @@
+#Updates
+I recently added code from Isaac Evan's preprocessor. To get the update, do a normal pull
+
+<pre>
+git pull
+</pre>
+Followed by 
+<pre>
+git submodule init
+git submodule update
+</pre>
+
+This wil get you all the sweet features.
+
+If the pull complains about changes to Makefile, come bother me, or read about git. Sorry, I don't have time to write  too much.
+
 #A few notes
 this is running the real 16bit DOS rasm executable inside of DOSBox. This means DOS limitations apply. Make your filenames really short (8 characters or less). To read more about the restrictions, visit [http://en.wikipedia.org/wiki/8.3_filename]
 
