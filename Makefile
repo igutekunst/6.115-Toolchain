@@ -7,17 +7,22 @@ endif
 # modifty this to include the asm file you want to proram
 SRC := test
 
+PRE := tpypp.py
 AS := rasm
 PROG := prog8051
 
-${SRC}.obj: ${SRC}.asm
-	${AS} ${SRC}.asm
 all: ${SRC}.obj
 
+
+${SRC}.obj: ${SRC}.asm
+	${PRE} ${SRC}.asm ${SRC}.asm.p
+	${AS} ${SRC}.asm.p
+
 clean:
-	rm ${SRC}.lst
-	rm ${SRC}.err
-	rm ${SRC}.obj
+	rm *.lst
+	rm *.err
+	rm *.obj
+	rm *.asm.p
 
 program: all
 	${PROG}  ${SRC}.obj --serial-port ${USERPORT}
