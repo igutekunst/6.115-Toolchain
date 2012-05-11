@@ -5,24 +5,24 @@ else
 USERPORT := `ls /dev/ttyUSB*`
 endif
 # modifty this to include the asm file you want to proram
-SRC := lab1/lab1_e_4.asm
+SRC := test
 
-PRE := tpypp/tpypp.py
+PRE := tpypp.py
 AS := rasm
 PROG := prog8051
 
-${SRC}.asm.processed : ${SRC}.asm
-	${PRE} ${SRC}.asm
-
-${SRC}.obj: ${SRC}.asm.processed
-	${AS} ${SRC}.asm.processed
 all: ${SRC}.obj
+
+
+${SRC}.obj: ${SRC}.asm
+	${PRE} ${SRC}.asm ${SRC}.asm.p
+	${AS} ${SRC}.asm.p
 
 clean:
 	rm *.lst
 	rm *.err
 	rm *.obj
-	rm *.asm.processed
+	rm *.asm.p
 
 program: all
 	${PROG}  ${SRC}.obj --serial-port ${USERPORT}

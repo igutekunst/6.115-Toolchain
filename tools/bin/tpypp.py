@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import tpypp.preprocessor
+import tpypp.preprocessor as preprocessor
 import sys
 
 helpstring = \
