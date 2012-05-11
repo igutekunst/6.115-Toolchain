@@ -1,0 +1,3 @@
+[submodule "tools/bin/tpypp"]
+	path = tools/bin/tpypp
+	url = git@github.com:igutekunst/tpypp.git
