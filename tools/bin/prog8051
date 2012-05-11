@@ -1,4 +1,9 @@
 #!/usr/bin/python
+import math
+class Status:
+  programming = False
+  sectors = 0
+  length = 0
 import sys, ConfigParser, argparse, time, serial, threading
 
 parser = argparse.ArgumentParser()
@@ -38,16 +43,58 @@ except serial.SerialException:
 time.sleep(1)
 
 def read():
-    try:
-        while True:
-            sys.stdout.write(port.read())
-    except:
-        pass
+  try:
+    while True:
+      data = port.read()
+      #sys.stdout.write(data)
+      if data == 'D' or data == ">":
+        Status.programming = True
+      elif data == ".":
+        Status.sectors += 1
+
+
+  except:
+    pass
+
+def progress_bar():
+  progress = 0 
+  bar_width = 70
+  while True:
+    if Status.programming == True:
+
+      print "Programming ... "
+      sys.stdout.write("0%   [")
+      sys.stdout.write("\x1b[%dC]" % (bar_width + 1))
+      sys.stdout.write("\x1b[%dD" % (bar_width + 2))
+      sys.stdout.flush()
+      while True:
+        fraction = Status.sectors/Status.length
+        if progress < (fraction) * bar_width:
+          sys.stdout.write("\x1b[s")
+          sys.stdout.write("\x1b[%dD" % (bar_width +10))
+          sys.stdout.write("%d" % int(fraction * 100))
+          sys.stdout.write("%")
+          sys.stdout.write("\x1b[u")
+          sys.stdout.write("=>")
+          sys.stdout.write("\x1b[1D")
+          sys.stdout.flush()
+          progress +=1
+          if progress > bar_width-2:
+            sys.stdout.write("\x1b[s")
+            sys.stdout.write("\x1b[%dD" % (bar_width +10))
+            sys.stdout.write("%d" % 100)
+            sys.stdout.write("%")
+            sys.stdout.write("\x1b[u")
+
+    time.sleep(.01)
 
 read_thread = threading.Thread(target=read)
 read_thread.daemon = True
 read_thread.start()
 
+progress_thread = threading.Thread(target=progress_bar)
+progress_thread.daemon = True
+progress_thread.start()
 def write(data):
     for char in data:
         port.write(char)
@@ -56,13 +103,22 @@ def write(data):
 program = open(args.name, 'r').read()
 program = program.replace('\n', '')
 program = program.replace('\r', '')
+Status.length = len(program) / 37.
 
-print "Sending code..."
 
 write("D")
-time.sleep(.5)
+print "Waiting for Minmon..."
+tries = 0
+while not Status.programming:
+  if tries == 10:
+    print "Timeout. Reset R31JP/Confirm MON mode"
+  time.sleep(.1)
+  write("D")
+  tries +=1
+#print "OK"
 write(program)
-time.sleep(.5)
-
+time.sleep(.1)
+sys.stdout.write("\x1b[1C\n")
+sys.stdout.flush()
+print "Programming Succeeded!"
 port.close()
-print

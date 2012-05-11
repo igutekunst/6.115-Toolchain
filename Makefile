@@ -1,22 +1,21 @@
 #modify this to be your seiral port
 ifeq (${shell uname} , Darwin)
-USERPORT := `ls /dev/tty.PL2303*`
+USERPORT := `ls /dev/tty.usbserial`
 else
 USERPORT := `ls /dev/ttyUSB*`
 endif
 # modifty this to include the asm file you want to proram
 SRC := test
 
-PRE := tpypp.py
+PREPROCESSOR := tpypp.py
 AS := rasm
 PROG := prog8051
 
-all: ${SRC}.obj
 
 
 ${SRC}.obj: ${SRC}.asm
-	${PRE} ${SRC}.asm ${SRC}.asm.p
-	${AS} ${SRC}.asm.p
+	${PREPROCESSOR} ${SRC}.asm ${SRC}.p.asm
+	${AS} ${SRC}.p.asm
 
 clean:
 	rm *.lst
@@ -24,6 +23,8 @@ clean:
 	rm *.obj
 	rm *.asm.p
 
+all: ${SRC}.obj
+
 program: all
-	${PROG}  ${SRC}.obj --serial-port ${USERPORT}
+	${PROG}  ${SRC}.p.obj --serial-port ${USERPORT}
 
