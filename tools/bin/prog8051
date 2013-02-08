@@ -1,38 +1,48 @@
 #!/usr/bin/python
+
+import argparse
+import ConfigParser
 import math
+import threading
+import time
+import serial
+import sys
+
 class Status:
   programming = False
   sectors = 0
   length = 0
-import sys, ConfigParser, argparse, time, serial, threading
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-p", "--serial-port", type=str,
+description = "Process either a .asm or .hex file and write it to the R31JP"
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument("-p", "--serial-port",
                     default="/dev/tty.usbserial",
+                    metavar="PORT",
                     help="Set programming serial port")
-parser.add_argument("name", type=str,
+parser.add_argument("-c", "--config",
+                    metavar="CONFIG",
+                    help="User specified configuration file")
+parser.add_argument("file",
                     help="Object file to write to the 8051")
-parser.add_argument("--config", "-c", type=str,
-                         action="store",
-                         default="prog8051_config.ini",
-                         help="User specified configuration file",
-                         dest="config_filename")
+
 args = parser.parse_args()
-config = ConfigParser.ConfigParser()
-serial_port = "/dev/tty.usbserial"
+# config = ConfigParser.ConfigParser()
+# serial_port = "/dev/tty.usbserial"
 print
 
-try:
-  config.read(args.config_filename)
-  serial_port = config.get("SerialPort", "Port")
-except ConfigParser.NoSectionError:
-  print "No config file, or config file error. Trying to read %s " % args.config_filename
-  if args.serial_port == "/dev/tty.usbserial":
-    print "Additionally, no custom port was specified with --serial-port"
-    print "Exiting"
-    sys.exit(1)
-if args.serial_port != "/dev/tty.usbserial":
-  serial_port = args.serial_port
+# try:
+#   config.read(args.config)
+#   serial_port = config.get("SerialPort", "Port")
+# except ConfigParser.NoSectionError:
+#   print "No config file, or config file error. Trying to read %s " % args.config
+#   if args.serial_port == "/dev/tty.usbserial":
+#     print "Additionally, no custom port was specified with --serial-port"
+#     print "Exiting"
+#     sys.exit(1)
+
+serial_port = args.serial_port
+
 try:
   port = serial.Serial(serial_port, baudrate=9600)
 except serial.SerialException:
@@ -100,7 +110,7 @@ def write(data):
         port.write(char)
         port.flush()
 
-program = open(args.name, 'r').read()
+program = open(args.file, 'r').read()
 program = program.replace('\n', '')
 program = program.replace('\r', '')
 Status.length = len(program) / 37.
