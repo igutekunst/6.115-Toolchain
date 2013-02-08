@@ -3,6 +3,9 @@
 
 It seems that AS31 will not support the DJNZ instruction. It seems to just have lots of issues.
 
+I am advising that people look at the rams branch, although it hasn't been updated with the latest bugfixes and code review.
+It actually works however.
+
 ## Just updated for Spring 2013
 
 I have updated the Makefile to use as31, and also changed all python to be python 3 compatible.
