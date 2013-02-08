@@ -1,4 +1,12 @@
 #Updates
+This toolchain is not current for Spring 2013. I am LAing this term, and will likely update this. Keep in mind that this toolchain
+is not officially supported or endorsed by the 6.115 staff. I might be able to help, but no promises.
+
+Check back for updates.
+
+
+
+
 I recently added code from Isaac Evan's preprocessor. To get the update, do a normal pull
 
 <pre>
