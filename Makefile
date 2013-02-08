@@ -8,7 +8,7 @@ endif
 SRC := test
 
 PREPROCESSOR := tpypp.py
-AS := rasm
+AS := as31
 PROG := prog8051
 
 
