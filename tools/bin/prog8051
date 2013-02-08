@@ -26,31 +26,18 @@ parser.add_argument("-c", "--config",
 parser.add_argument("file",
                     help="Object file to write to the 8051")
 
+# Initialize all values and read configuration file
 args = parser.parse_args()
-# config = ConfigParser.ConfigParser()
-# serial_port = "/dev/tty.usbserial"
-print
 
-# try:
-#   config.read(args.config)
-#   serial_port = config.get("SerialPort", "Port")
-# except ConfigParser.NoSectionError:
-#   print "No config file, or config file error. Trying to read %s " % args.config
-#   if args.serial_port == "/dev/tty.usbserial":
-#     print "Additionally, no custom port was specified with --serial-port"
-#     print "Exiting"
-#     sys.exit(1)
-
-serial_port = args.serial_port
-
-try:
-  port = serial.Serial(serial_port, baudrate=9600)
-except serial.SerialException:
-  print "Serial port %s not found" % serial_port
-  print "Please confirm you device is plugged in, and the correct port is specified"
-  sys.exit(1)
-
-time.sleep(1)
+if args.config:
+  config = ConfigParser.ConfigParser()
+  try:
+    config.read(args.config)
+    args.serial_port = config.get("SerialPort", "Port")
+  except ConfigParser.NoSectionError:
+    print "No config file, or config file error. Trying to read %s " % args.config
+    print "Exiting"
+    sys.exit(1)
 
 def read():
   try:
@@ -62,16 +49,19 @@ def read():
       elif data == ".":
         Status.sectors += 1
 
-
   except:
     pass
+
+def write(data):
+    for char in data:
+        port.write(char)
+        port.flush()
 
 def progress_bar():
   progress = 0 
   bar_width = 70
   while True:
     if Status.programming == True:
-
       print "Programming ... "
       sys.stdout.write("0%   [")
       sys.stdout.write("\x1b[%dC]" % (bar_width + 1))
@@ -98,6 +88,16 @@ def progress_bar():
 
     time.sleep(.01)
 
+try:
+  port = serial.Serial(args.serial_port, baudrate=9600)
+except serial.SerialException:
+  print "Serial port %s not found" % args.serial_port
+  print "Please confirm you device is plugged in, and the correct port is specified"
+  sys.exit(1)
+
+print "Using serial port %s" % args.serial_port
+time.sleep(1)
+
 read_thread = threading.Thread(target=read)
 read_thread.daemon = True
 read_thread.start()
@@ -105,27 +105,25 @@ read_thread.start()
 progress_thread = threading.Thread(target=progress_bar)
 progress_thread.daemon = True
 progress_thread.start()
-def write(data):
-    for char in data:
-        port.write(char)
-        port.flush()
 
 program = open(args.file, 'r').read()
 program = program.replace('\n', '')
 program = program.replace('\r', '')
 Status.length = len(program) / 37.
 
-
 write("D")
 print "Waiting for Minmon..."
+
 tries = 0
 while not Status.programming:
   if tries == 10:
-    print "Timeout. Reset R31JP/Confirm MON mode"
+    print "Timeout. Reset R31JP/Confirm MON mode and retry."
+    port.close()
+    sys.exit(1)
   time.sleep(.1)
   write("D")
   tries +=1
-#print "OK"
+
 write(program)
 time.sleep(.1)
 sys.stdout.write("\x1b[1C\n")
