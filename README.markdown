@@ -1,4 +1,7 @@
 #Updates
+### AS31 Potential Issue with DJNZ
+
+It seems that AS31 will not support the DJNZ instruction. It seems to just have lots of issues.
 
 ## Just updated for Spring 2013
 
