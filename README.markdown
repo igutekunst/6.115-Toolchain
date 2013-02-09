@@ -108,12 +108,7 @@ prog8051 --help
 If you want to avoid typing the serial port each time, edit the file prog8051_config.ini in the 6.115 directory to reflect 
 the correct port.
 
-#Mac Instructions
-* Follow the general instructions above, but Instead install pyserial, and argparse with the following command
-<pre>
-sudo easy_install pyserial
-sudo easy_install argparase
-</pre>
+
 
 ##Problems
 
