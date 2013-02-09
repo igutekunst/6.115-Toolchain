@@ -18,10 +18,11 @@ ${SRC}.obj: ${SRC}.asm
 	${AS} ${SRC}.p.asm
 
 clean:
-	rm *.lst
-	rm *.err
-	rm *.obj
-	rm *.asm.p
+	rm -f *.lst
+	rm -f *.err
+	rm -f *.obj
+	rm -f *.hex
+	rm -f *.asm.p
 
 all: ${SRC}.obj
 
