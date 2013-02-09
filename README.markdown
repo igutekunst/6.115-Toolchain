@@ -3,8 +3,7 @@
 
 It seems that AS31 will not support the DJNZ instruction. It seems to just have lots of issues.
 
-I am advising that people look at the rams branch, although it hasn't been updated with the latest bugfixes and code review.
-It actually works however.
+You are welcome to use as31 or rasm. If you use rasm, you need to change the Makefile to use rasm.
 
 ## Just updated for Spring 2013
 
@@ -29,14 +28,16 @@ This wil get you all the sweet features.
 
 If the pull complains about changes to Makefile, come bother me, or read about git. Sorry, I don't have time to write  too much.
 
-#A few notes
+##A few notes
 
 These instructions have been tested on Mac and Ubuntu (donlanes). You will need some kind of a serial port to them to work. If you have questions, please ask me (isaac).
 
 I will likely continue to work on the toolchain, and will send out an email if I add something notable. prog8051 is a bit sketchy. I haven't tested it much. I will add version numbers to my toolchain if I release more than a few versions.
 
 A usb-serial dongle that works on Linux is: http://www.amazon.com/TRENDnet-Serial-Converter-TU-S9-White/dp/B0007T27H8/ref=sr_1_1?ie=UTF8&qid=1328853484&sr=8-1
-#Ubuntu Instructions
+
+#Installation Instructions (includes RASM)
+##Ubuntu Instructions
 <pre>
 sudo apt-get install dosbox python-serial python-argparse
 cd ~
@@ -45,6 +46,18 @@ echo  "export PATH=~/6.115/tools/bin:\$PATH" >> ~/.bashrc
 source ~/.bashrc
 </pre>
 
+##Mac Instructions
+* Copy DOSBox.app into /Applications
+* Make a symlink  to /Applications/DOSBox.app/Contents/MacOS/DOSBox from ~/6.115/tools/bin/dosbox
+<pre>
+ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/6.115/tools/bin/dosbox 
+</pre>
+* Follow the general instructions above, but Instead install pyserial, and argparse with the following command
+
+<pre>
+sudo easy_install pyserial
+sudo easy_install argparase
+</pre>
 Test this by typing rasm test.asm
 
 It should print something like this:
@@ -69,6 +82,7 @@ Now plug in your serial port, and repeat the command. The item that shows up is 
 You can modify the Makefile to change which asm file it assembles by changing the SRC variable.
 
 Just open the file and replace SRC := test with SRC := myfile  (without the asm). Your file must be named myfile.asm
+
 ##Plain Old rasm
 If you want, you can also just use rasm as documented in the lab
 
