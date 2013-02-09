@@ -1,5 +1,29 @@
+#Updates
+
+## Just updated for Spring 2013
+
+I have updated the Makefile to use as31, and also changed all python to be python 3 compatible.
+
+Note: This toolchain was made for me, and is very hackish. If there is interest in me improving it, or you yourself have ideas
+on how to improve it, pleas let me know, fork away, and share the software...
+
+
+I recently added code from Isaac Evan's preprocessor. To get the update, do a normal pull/clone
+
+<pre>
+git pull
+</pre>
+Followed by 
+<pre>
+git submodule init
+git submodule update
+</pre>
+
+This wil get you all the sweet features.
+
+If the pull complains about changes to Makefile, come bother me, or read about git. Sorry, I don't have time to write  too much.
+
 #A few notes
-this is running the real 16bit DOS rasm executable inside of DOSBox. This means DOS limitations apply. Make your filenames really short (8 characters or less). To read more about the restrictions, visit [http://en.wikipedia.org/wiki/8.3_filename]
 
 These instructions have been tested on Mac and Ubuntu (donlanes). You will need some kind of a serial port to them to work. If you have questions, please ask me (isaac).
 
@@ -19,33 +43,16 @@ Test this by typing rasm test.asm
 
 It should print something like this:
 <pre>
-Executing DOSBox...
-
-Rasm51E 1.32 (c) Rigel Corporation 1990-1995
-Assembling file t:temp.asm
-opening file t:temp.asm
-pass 1
-
-4 lines of source code read
-
-pass 2
-  assembly time :   0.000 seconds
-writing file t:temp.lst to disk
-writing file t:temp.obj to disk
-disk write time :   0.000 seconds
-
-no errors found...Rasm51E terminates...
-
--rw-r--r--  1 isaac   26 Feb  9 17:55 test.err
--rw-r--r--  1 isaac  132 Feb  9 17:55 test.lst
--rw-r--r--  1 isaac   44 Feb  9 17:55 test.obj
+as31 test.p.asm
+Begin Pass #1
+Begin Pass #2
 </pre>
 
 Additionally, you can type
 <pre>
 make program
 </pre>
-To upload the program on the RJ31P (is that what it's called). 
+To upload the program on the R31JP
 ##Serial Port Settings
 For this to work, edit the Makefile and change the serial port to be the correct one for you machine. To find out, first type
 <pre>
@@ -80,11 +87,6 @@ If you want to avoid typing the serial port each time, edit the file prog8051_co
 the correct port.
 
 #Mac Instructions
-* Copy DOSBox.app into /Applications
-* Make a symlink  to /Applications/DOSBox.app/Contents/MacOS/DOSBox from ~/6.115/tools/bin/dosbox
-<pre>
-ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/6.115/tools/bin/dosbox 
-</pre>
 * Follow the general instructions above, but Instead install pyserial, and argparse with the following command
 <pre>
 sudo easy_install pyserial
@@ -92,28 +94,6 @@ sudo easy_install argparase
 </pre>
 
 ##Problems
-If you get something like
-<pre>
-isaac$:~/6.115$ rasm test.asm
-Executing DOSBox...
-Sorry, DOSBox failed.  Full output follows:
-DOSBox version 0.74
-Copyright 2002-2010 DOSBox Team, published under GNU GPL.
----
-CONFIG: Generating default configuration.
-Writing it to /home/isaac/.dosbox/dosbox-0.74.conf
-CONFIG:Loading primary settings from config file
-/home/isaac/.dosbox/dosbox-0.74.conf
-MIXER:Got different values from SDL: freq 44100, blocksize 512
-ALSA:Can't subscribe to MIDI port (65:0) nor (17:0)
-MIDI:Opened device:none
-SHELL:Redirect output to t:LOG
-Illegal command: r:\rasm51e.exe.
-isaac$:~/6.115$
-</pre>
-
-You should modify tools/bin/rasm and adjust the indicated line to point at the rasm directory.
-
 
 #Getting Involved / I fixed something
 
@@ -121,3 +101,11 @@ If you find something broken, or want to improve the toolchain, go ahead and for
 a modified file, and I'll merge it if it looks ok. 
 
 I can also make you a collaborator on GitHub if you are intersted enough.
+
+# Things I want to change
+* Make this a software package that uses some packaging system, either pip or python egg format, or 
+* Use GNU Build System (Make, autoconf, etc)
+* make prog8051 cleaner
+* Perhaps use the C preprocessor somehow
+* Make the Makefile not terrible. I had no idea how Makefiles worked when I created this, and know slightly more now
+* Make a linker??
