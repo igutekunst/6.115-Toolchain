@@ -13,7 +13,7 @@ Note: This toolchain was made for me, and is very hackish. If there is interest 
 on how to improve it, pleas let me know, fork away, and share the software...
 
 
-I recently added code from Isaac Evan's preprocessor. To get the update, do a normal pull/clone
+I recently added code from [Isaac Evan's preprocessor](https://github.com/ievans/tpypp). To get the update, do a normal pull/clone
 
 <pre>
 git pull
@@ -24,13 +24,13 @@ git submodule init
 git submodule update
 </pre>
 
-This wil get you all the sweet features.
+This wil get you all the sweet features, notably #defines, and conditional exectution.
 
 If the pull complains about changes to Makefile, come bother me, or read about git. Sorry, I don't have time to write  too much.
 
 ##A few notes
 
-These instructions have been tested on Mac and Ubuntu (donlanes). You will need some kind of a serial port to them to work. If you have questions, please ask me (isaac).
+These instructions have been tested on Mac, Ubuntu 11?? and Arch Linux. You will need some kind of a serial port to them to work. If you have questions, please ask me (isaac).
 
 I will likely continue to work on the toolchain, and will send out an email if I add something notable. prog8051 is a bit sketchy. I haven't tested it much. I will add version numbers to my toolchain if I release more than a few versions.
 
@@ -58,6 +58,8 @@ ln -s /Applications/DOSBox.app/Contents/MacOS/DOSBox ~/6.115/tools/bin/dosbox
 sudo easy_install pyserial
 sudo easy_install argparase
 </pre>
+
+##Testing
 Test this by typing rasm test.asm
 
 It should print something like this:
